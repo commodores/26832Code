@@ -3,19 +3,21 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 
 public class MyOpMode extends LinearOpMode {
-    private DcMotor motorTest;
-    private Servo servoTest;
+    private Servo clawServo;
+    private DcMotorSimple armMotor = null;
+
 
 
     @Override
     public void runOpMode() {
-        motorTest = hardwareMap.get(DcMotor.class, "motorTest");
-        servoTest = hardwareMap.get(Servo.class, "servoTest");
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
+        armMotor  = hardwareMap.get(DcMotorSimple.class, "armMotor");
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -23,24 +25,32 @@ public class MyOpMode extends LinearOpMode {
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        double tgtPower = 0;
         while (opModeIsActive()) {
-            tgtPower = -this.gamepad1.left_stick_y;
-            motorTest.setPower(tgtPower);
+
+            double armPower = .5;
+
             // check to see if we need to move the servo.
             if(gamepad1.y) {
                 // move to 0 degrees.
-                servoTest.setPosition(0);
-            } else if (gamepad1.x || gamepad1.b) {
+                clawServo.setPosition(0);
+            } else if (gamepad1.b) {
                 // move to 90 degrees.
-                servoTest.setPosition(0.5);
-            } else if (gamepad1.a) {
-                // move to 180 degrees.
-                servoTest.setPosition(1);
+                clawServo.setPosition(1);
             }
-            telemetry.addData("Servo Position", servoTest.getPosition());
-            telemetry.addData("Target Power", tgtPower);
-            telemetry.addData("Motor Power", motorTest.getPower());
+
+            // check to see if we move the arm.
+            if(gamepad1.x) {
+                // move forward.
+                armMotor.setPower(armPower);
+            } else if (gamepad1.a) {
+                // move reverse.
+                armMotor.setPower(armPower);
+            } else {
+                armMotor.setPower(0);
+            }
+
+            telemetry.addData("Servo Position", clawServo.getPosition());
+
             telemetry.addData("Status", "Running");
             telemetry.update();
 
