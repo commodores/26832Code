@@ -30,6 +30,7 @@ public class MyOpMode extends LinearOpMode {
             double armPower = .5;
 
             // check to see if we need to move the servo.
+
             if(gamepad1.y) {
                 // move to 0 degrees.
                 clawServo.setPosition(0);
